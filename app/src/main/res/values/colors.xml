@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="start_button_color">#4CAF50</color> <!-- Green -->
+    <color name="stop_button_color">#F44336</color> <!-- Red -->
 </resources>
