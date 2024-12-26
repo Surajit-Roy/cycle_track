@@ -14,9 +14,15 @@
             android:id="@+id/bottom_nav"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_dark"
+            app:itemIconTint="@color/bottom_nav_color_selector"
+            app:itemTextColor="@color/bottom_nav_color_selector"
             app:menu="@menu/bottom_nav_menu"
+            style="@style/BottomNavStyle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:itemTextAppearanceInactive="@style/BottomNavItemText"
+            app:itemTextAppearanceActive="@style/BottomNavItemTextSelected"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Container for dynamically loaded fragments -->

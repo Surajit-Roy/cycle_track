@@ -31,11 +31,14 @@ class TabFragment : Fragment() {
     private var startTime: Long = 0
     private var totalDistance = 0.0f
     private var caloriesBurned = 0.0f
-    private var weight: Float = 70f // In kg, update according to user's data
+    private var gender = ""
+    private var weight: Float = 0f // In kg, update according to user's data
     private var lastSpeed: Float = 0.0f // Store the last known speed
     private var previousLocation: Location? = null // Store the previous location
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    private lateinit var dbHelper: AppDatabaseHelper
+    private lateinit var calorieCalculator: CalorieCalculator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +53,15 @@ class TabFragment : Fragment() {
         // Dynamically update the UI based on the activity type
         val speedometerLabel = rootView.findViewById<TextView>(R.id.tv_speedometer_label)
         speedometerLabel.text = "$activityType Speedometer"
+
+        dbHelper = AppDatabaseHelper(requireContext())
+        val user = dbHelper.getUser(1)
+        if (user != null) {
+            weight = user.weight
+            gender = user.gender
+        }
+
+        calorieCalculator = CalorieCalculator(weight.toDouble(), gender.lowercase())
 
         // Initialize the speed display
         speedTextView = TextView(requireContext()).apply {
@@ -101,7 +113,7 @@ class TabFragment : Fragment() {
             override fun run() {
                 if (isTracking) {
                     updateTime()
-                    updateDistanceAndCalories(lastSpeed)
+                    updateDistanceAndCalories()
                     handler.postDelayed(this, 1000)
                 }
             }
@@ -131,22 +143,22 @@ class TabFragment : Fragment() {
         timeInfoTextView.text = String.format("%02d:%02d", minutes, seconds)
     }
 
-    private fun calculateCaloriesBurned(speed: Float, elapsedTimeInSeconds: Long, activityType: String?): Float {
-        // Determine MET value dynamically based on activity type and speed
-        val metValue = when (activityType) {
-            "Running" -> 0.2f * speed + 3.5f
-            "Cycling" -> 0.1f * speed + 5.5f
-            else -> 0.1f * speed + 3.5f
-        }
+//    private fun calculateCaloriesBurned(speed: Float, elapsedTimeInSeconds: Long, activityType: String?): Float {
+//        // Determine MET value dynamically based on activity type and speed
+//        val metValue = when (activityType) {
+//            "Running" -> 0.2f * speed + 3.5f
+//            "Cycling" -> 0.1f * speed + 5.5f
+//            else -> 0.1f * speed + 3.5f
+//        }
+//
+//        // Convert elapsed time to hours
+//        val elapsedTimeInHours = elapsedTimeInSeconds / 3600f
+//
+//        // Calorie burn formula
+//        return metValue * weight * elapsedTimeInHours
+//    }
 
-        // Convert elapsed time to hours
-        val elapsedTimeInHours = elapsedTimeInSeconds / 3600f
-
-        // Calorie burn formula
-        return metValue * weight * elapsedTimeInHours
-    }
-
-    private fun updateDistanceAndCalories(speed: Float) {
+    private fun updateDistanceAndCalories() {
         // Distance
         if (totalDistance < 1000) {
             distanceInfoTextView.text = String.format("%.0f m", totalDistance)
@@ -158,7 +170,7 @@ class TabFragment : Fragment() {
         val elapsedTimeInSeconds = (System.currentTimeMillis() - startTime) / 1000
 
         // Update calories burned
-        caloriesBurned = calculateCaloriesBurned(speed, elapsedTimeInSeconds, activityType)
+        caloriesBurned = calorieCalculator.calculateCalories(activityType ?: "", totalDistance.toDouble()).toFloat()
         calInfoTextView.text = String.format("%.1f kcal", caloriesBurned)
     }
 
@@ -176,7 +188,7 @@ class TabFragment : Fragment() {
             previousLocation = location
 
             // Update UI
-            updateDistanceAndCalories(lastSpeed)
+            updateDistanceAndCalories()
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}

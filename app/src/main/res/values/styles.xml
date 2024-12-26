@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BottomNavStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <!-- Set item background to transparent -->
+        <item name="android:itemBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="BottomNavItemText">
+        <item name="android:textSize">12sp</item> <!-- Smaller size for unselected items -->
+    </style>
+
+    <style name="BottomNavItemTextSelected">
+        <item name="android:textSize">14sp</item> <!-- Larger size for selected item -->
+    </style>
+</resources>
