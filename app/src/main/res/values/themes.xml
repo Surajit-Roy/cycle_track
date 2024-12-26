@@ -2,8 +2,19 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CycleTrack360" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 
     <style name="Theme.CycleTrack360" parent="Base.Theme.CycleTrack360" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.SplashScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen_bg</item>
+        <item name="android:windowNoTitle">true</item> <!-- Removes title bar -->
+        <item name="android:windowFullscreen">true</item> <!-- Makes it fullscreen -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:icon">@android:color/transparent</item>
+    </style>
+
 </resources>
