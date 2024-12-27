@@ -61,7 +61,7 @@ class regFragment : Fragment() {
             val height = view.findViewById<EditText>(R.id.edit_height).text.toString().toFloatOrNull() ?: 0f
             val weight = view.findViewById<EditText>(R.id.edit_weight).text.toString().toFloatOrNull() ?: 0f
             val gender = if (view.findViewById<RadioButton>(R.id.rb_male).isChecked) "Male" else "Female"
-            val unit = if (view.findViewById<RadioButton>(R.id.km_unit).isChecked) "Kilometer" else "Mile"
+            val unit = if (view.findViewById<RadioButton>(R.id.km_unit).isChecked) "Meter" else "Kilometer"
 
             if (birthYear.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter or select birth year", Toast.LENGTH_SHORT).show()

@@ -32,6 +32,8 @@ class TabFragment : Fragment() {
     private var totalDistance = 0.0f
     private var caloriesBurned = 0.0f
     private var gender = ""
+    private var userUnit: String = ""
+    private var unitInfoTextView: String = ""
     private var weight: Float = 0f // In kg, update according to user's data
     private var lastSpeed: Float = 0.0f // Store the last known speed
     private var previousLocation: Location? = null // Store the previous location
@@ -59,25 +61,18 @@ class TabFragment : Fragment() {
         if (user != null) {
             weight = user.weight
             gender = user.gender
+            userUnit = user.unit
         }
 
         calorieCalculator = CalorieCalculator(weight.toDouble(), gender.lowercase())
-
-        // Initialize the speed display
-        speedTextView = TextView(requireContext()).apply {
-            textSize = 48f
-            text = "0.0 km/h"
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-        }
-
-        // Add speedTextView to the speedometer container
-        val speedometerContainer = rootView.findViewById<ViewGroup>(R.id.speedometer_container)
-        speedometerContainer.addView(speedTextView)
 
         // Initialize the time, distance, and calorie displays
         timeInfoTextView = rootView.findViewById(R.id.time_info)
         distanceInfoTextView = rootView.findViewById(R.id.distance_info)
         calInfoTextView = rootView.findViewById(R.id.cal_info)
+        speedTextView = rootView.findViewById(R.id.speed_text)
+        unitInfoTextView = rootView.findViewById<TextView>(R.id.unit_info).toString()
+        unitInfoTextView = userUnit
 
         // Initialize the location manager
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -103,8 +98,8 @@ class TabFragment : Fragment() {
 
     private fun startLocationUpdates() {
         // Reset UI and initialize tracking
-        speedTextView.text = "0.0 km/h"
-        distanceInfoTextView.text = "0m"
+        speedTextView.text = "0.0"
+        distanceInfoTextView.text = "00:00"
         startTime = System.currentTimeMillis()
 
         // Start updating time, distance, and calories
@@ -160,25 +155,33 @@ class TabFragment : Fragment() {
 
     private fun updateDistanceAndCalories() {
         // Distance
-        if (totalDistance < 1000) {
-            distanceInfoTextView.text = String.format("%.0f m", totalDistance)
+        if (totalDistance >= 1000) {
+            // If distance is greater than or equal to 1000 meters, display in kilometers
+            unitInfoTextView = "Kilometer"
+            distanceInfoTextView.text = String.format("%.2f", totalDistance / 1000)
         } else {
-            distanceInfoTextView.text = String.format("%.2f km", totalDistance / 1000)
+            // Otherwise, display in meters
+            distanceInfoTextView.text = String.format("%.0f", totalDistance)
         }
 
-        // Calculate elapsed time in seconds
-        val elapsedTimeInSeconds = (System.currentTimeMillis() - startTime) / 1000
+        // Calculate distance in the appropriate unit for calorie calculation
+        val distanceForCalories = totalDistance / 1000
 
-        // Update calories burned
-        caloriesBurned = calorieCalculator.calculateCalories(activityType ?: "", totalDistance.toDouble()).toFloat()
-        calInfoTextView.text = String.format("%.1f kcal", caloriesBurned)
+        // Update calories burned using the `calculateCalories` method
+        caloriesBurned = calorieCalculator.calculateCalories(
+            activityType ?: "",
+            distanceForCalories.toDouble()
+        ).toFloat()
+
+        // Display calories burned
+        calInfoTextView.text = String.format("%.1f", caloriesBurned)
     }
 
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             val speed = location.speed * 3.6f // Convert m/s to km/h
             lastSpeed = speed
-            speedTextView.text = String.format("%.1f km/h", speed)
+            speedTextView.text = String.format("%.1f", speed)
 
             // Update distance
             if (previousLocation != null) {

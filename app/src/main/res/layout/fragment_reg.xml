@@ -175,7 +175,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@drawable/radio_button_selector"
-                android:text="Kilometer" />
+                android:text="Meter" />
 
             <RadioButton
                 android:id="@+id/mile_unit"
@@ -183,7 +183,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:backgroundTint="@drawable/radio_button_selector"
-                android:text="Mile" />
+                android:text="Kilometer" />
         </RadioGroup>
 
         <!-- Register Button -->
